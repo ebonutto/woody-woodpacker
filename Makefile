@@ -1,38 +1,35 @@
-NAME=woody_woodpacker
+NAME := woody_woodpacker
 
-CC=gcc
-CFLAGS=-Wall -Werror -Wextra -g -MMD -D_GNU_SOURCE
+CC := cc
+CFLAGS := -Wall -Wextra -Werror
 
-SRC_DIR=src
-BUILD=.build
-INCLUDE=-Iinclude
+SRC_DIR := src
+INC_DIR := include
+BUILD_DIR := .build
 
-SRC=$(shell find $(SRC_DIR) -name '*.c')
-OBJ=$(patsubst $(SRC_DIR)/%.c, $(BUILD)/%.o, $(SRC))
-DEP=$(OBJ:%.o=%.d)
+CPPFLAGS := -I$(INC_DIR) -MMD -MP
 
-all: create_dir $(NAME)
+SRCS := $(shell find $(SRC_DIR) -type f -name "*.c")
+OBJS := $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
+DEPS := $(OBJS:.o=.d)
 
-create_dir: | $(BUILD)
+.PHONY: all clean fclean re
 
-$(BUILD):
-	@mkdir -p $(BUILD)
+all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $@
+$(NAME): $(OBJS)
+	$(CC) $^ -o $@
 
-$(BUILD)/%.o: $(SRC_DIR)/%.c
-	@mkdir -p $(dir $@)
-	@$(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	@if [ -d $(BUILD) ]; then rm -rf $(BUILD) && printf "\033[1;31m\tDeleted: $(NAME) $(BUILD)\033[0m\n"; fi
+	rm -rf $(BUILD_DIR)
 
 fclean: clean
-	@if [ -f $(NAME) ]; then rm -rf $(NAME) && printf "\033[1;31m\tDeleted: $(NAME)\033[0m\n"; fi
+	rm -f $(NAME)
 
 re: fclean all
 
--include $(DEP)
-
-.PHONY=all clean fclean re create_dir
+-include $(DEPS)
