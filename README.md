@@ -5,4 +5,18 @@ https://www.obfuscators.io/
 
 
 Project structure:
-	
+
+
+
+
+
+## References
+
+### Packers
+
+- YES
+
+
+### Encryption
+
+- RC4
