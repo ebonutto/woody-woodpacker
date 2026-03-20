@@ -1,17 +1,6 @@
 #include <stdio.h>
 #include <fcntl.h>  // open()
 
-
-/*
- * Functions
- */
-
-//int read_file(const char *filename)
-//{
-	
-//	return (1);
-//}
-
 #include <sys/syscall.h>  // stat
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -21,53 +10,58 @@
 #include <stdlib.h>
 
 #include "packer.h"
+#include <sys/mman.h>
 
-void read_file(t_packer *ctx)
+void init_packer_ctx(s_packer_ctx *packer_ctx)
 {
-	const char  *prog_name = ctx->prog_name;
-	const char  *filename = ctx->filename;
 	int         fd;
 	struct stat st;
 
-	/* Open file, if not quit */
-	fd = open(filename, O_RDONLY);
+	fd = open(packer_ctx->args.file_name, O_RDONLY);
 	if (fd < 0) {
-		perror("filename");
+		perror(packer_ctx->args.file_name);
 		exit(1);
 	}
 
-	/* Init stat */
-	if (stat(filename, &st) < 0) {
+	if (stat(packer_ctx->args.file_name, &st) < 0) {
 		perror("stat() failed");
 		close(fd);
 		exit(1);
 	}
 
-	/* Check if filename is a directory */
 	if (!S_ISREG(st.st_mode)) {
-		fprintf(stderr, "%s: Error: %s is not a regular file !\n", prog_name, filename);
+		fprintf(stderr, "%s: Error: %s is not a regular file !\n", packer_ctx->args.prog_name, packer_ctx->args.file_name);
 		close(fd);
 		exit(1);
 	}
 
-	ctx->fsize = st.st_size;
-
-	malloc(sizeof(char) * ctx->fsize);
-}
-
-
-int main(int argc, char **argv)
-{
-
-	if (argc < 2) {
-		fprintf(stderr, "%s: Error: no file to pack !\n", argv[0]);
-		return (1);
+	packer_ctx->map = mmap(NULL, st.st_size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+	if (!packer_ctx->map) {
+		close(fd);
+		exit(1);
 	}
 
-	/* Init context */
-	t_packer ctx = {argv[0], argv[1], 0};
+	packer_ctx->file_size = st.st_size;
+	close(fd);
+}
 
-	read_file(&ctx);
+void free_packer_ctx(s_packer_ctx *packer_ctx)
+{
+	munmap(packer_ctx->map, packer_ctx->file_size);
+}
 
+#include "args.h"
+int main(int argc, char **argv)
+{
+	s_packer_ctx packer_ctx;
+
+	packer_ctx.args = parse_args(argc, argv);
+
+	init_packer_ctx(&packer_ctx);
+	//woody_woodpacker(&ctx);
+
+	//pack(&ctx);
+
+	free_packer_ctx(&packer_ctx);
 	return (0);
 }
