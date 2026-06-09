@@ -1,24 +1,30 @@
 NAME := woody_woodpacker
 
 CC := cc
+
 CFLAGS := -Wall -Wextra -Werror
+CPPFLAGS := -Iinclude -MMD -MP
+
+LDFLAGS := 
+LDLIBS := $(addprefix -l, m)
 
 SRC_DIR := src
 INC_DIR := include
 BUILD_DIR := .build
 
-CPPFLAGS := -I$(INC_DIR) -MMD -MP
-
 SRCS := $(shell find $(SRC_DIR) -type f -name "*.c")
 OBJS := $(SRCS:$(SRC_DIR)/%.c=$(BUILD_DIR)/%.o)
 DEPS := $(OBJS:.o=.d)
 
-.PHONY: all clean fclean re
+DOCKER_IMAGE := $(NAME)
+DOCKER_FLAGS := --cap-add=NET_RAW --rm -it -v $(shell pwd):/app -w /app
+
+.PHONY: all clean fclean re docker-build docker-dev docker-clean
 
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	$(CC) $^ -o $@
+	$(CC) $^ -o $@ $(LDFLAGS) $(LDLIBS)
 
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(@D)
@@ -33,3 +39,12 @@ fclean: clean
 re: fclean all
 
 -include $(DEPS)
+
+docker-build:
+	docker build --target dev -t $(DOCKER_IMAGE):dev .
+
+docker-dev: docker-build
+	docker run $(DOCKER_FLAGS) $(DOCKER_IMAGE):dev bash
+
+docker-clean:
+	docker rmi -f $(DOCKER_IMAGE):dev
