@@ -18,14 +18,14 @@ typedef struct s_woody_ctx {
 	char *filename;
 	off_t filesize;
 	void *map;
+	size_t oep;
 } t_woody_ctx;
 
 /*
  * Macros
  */
 
-#define IN_BOUNDS(ctx, offset, size) \
-	((offset) <= (ctx)->filesize && (size) <= (ctx)->filesize - (offset))
+
 
 
 /*

@@ -7,20 +7,18 @@
 #include <string.h> // memcmp()
 
 
+#define MAX_MAGIC 4
+
+
 int dispatch_format(t_woody_ctx *ctx)
 {
 	static const t_format formats[] = {
 		{{0x7F, 'E', 'L', 'F' }, 4, "ELF", pack_elf},
 		{{0x00, 0x00, 0x00, 0x00 }, 0, NULL, NULL}
 	};
-	size_t         max_magic;
 	const t_format *fmt;
 
-	max_magic = 0;
-	for (fmt = formats; fmt->magic_len; fmt++)
-		if (fmt->magic_len > max_magic)
-			max_magic = fmt->magic_len;
-	if (ctx->filesize < (off_t)max_magic) {
+	if (ctx->filesize < (off_t)MAX_MAGIC) {
 		fprintf(stderr, "%s: Error: %s: file too small\n",
 		        ctx->progname, ctx->filename);
 	}
