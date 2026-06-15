@@ -6,7 +6,7 @@ CFLAGS := -Wall -Wextra -Werror
 CPPFLAGS := -Iinclude -MMD -MP
 
 LDFLAGS := 
-LDLIBS := $(addprefix -l, m)
+LDLIBS := $(addprefix -l, c)
 
 SRC_DIR := src
 INC_DIR := include
