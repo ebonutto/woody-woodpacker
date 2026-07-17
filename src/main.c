@@ -2,7 +2,6 @@
 
 #include <string.h> // memset()
 
-
 int main(int argc, char **argv)
 {
 	t_woody_ctx ctx;
