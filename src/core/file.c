@@ -7,7 +7,6 @@
 #include <fcntl.h> // O_RDONLY, open()
 #include <stdio.h> // stderr, fprintf(), perror()
 
-
 int map_file(t_woody_ctx *ctx)
 {
 	int fd;
@@ -18,17 +17,20 @@ int map_file(t_woody_ctx *ctx)
 		perror(ctx->filename);
 		return (1);
 	}
+
 	if (stat(ctx->filename, &st) < 0) {
 		perror("stat()");
 		close(fd);
 		return (1);
 	}
+
 	if (!S_ISREG(st.st_mode)) {
 		fprintf(stderr, "%s: Error: %s is not a regular file\n",
 		        ctx->progname, ctx->filename);
 		close(fd);
 		return (1);
 	}
+
 	ctx->map = mmap(NULL, st.st_size, PROT_READ | PROT_WRITE,
 	                MAP_PRIVATE, fd, 0);
 	if (ctx->map == MAP_FAILED) {
@@ -36,7 +38,9 @@ int map_file(t_woody_ctx *ctx)
 		close(fd);
 		return (1);
 	}
+
 	ctx->filesize = st.st_size;
+
 	close(fd);
 	return (0);
 }

@@ -3,57 +3,49 @@
 #include <elf.h> // Elf64_Ehdr, Elf64_Phdr
 #include <stdio.h>
 #include <string.h>
-#define IN_BOUNDS(filesize, offset, size) \
+
+#define IN_BOUNDS(filesize, size, offset) \
 	((off_t)(offset) <= filesize && (off_t)(size) <= filesize - (off_t)(offset))
 
 unsigned char stub_bin[] = {
-  0x48, 0x8d, 0x1d, 0xf9, 0xff, 0xff, 0xff, 0xb8, 0x01, 0x00, 0x00, 0x00,
-  0xbf, 0x01, 0x00, 0x00, 0x00, 0x48, 0x8d, 0x73, 0x2d, 0xba, 0x0e, 0x00,
-  0x00, 0x00, 0x0f, 0x05, 0x48, 0x8b, 0x05, 0x02, 0x00, 0x00, 0x00, 0xff,
-  0xe0, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x48, 0x65, 0x6c,
-  0x6c, 0x6f, 0x2c, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0a
+0x48, 0x8d, 0x1d, 0xf9, 0xff, 0xff, 0xff, 0x52, 0xb8, 0x01, 0x00, 0x00, 0x00, 0xbf, 0x01, 0x00, 0x00, 0x00, 0x48, 0x8d, 0x73, 0x32, 0xba, 0x0e, 0x00, 0x00, 0x00, 0x0f, 0x05, 0x5a, 0x48, 0x8b, 0x05, 0x05, 0x00, 0x00, 0x00, 0x48, 0x01, 0xd8, 0xff, 0xe0, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x42, 0x48, 0x65, 0x6c, 0x6c, 0x6f, 0x2c, 0x20, 0x57, 0x6f, 0x72, 0x6c, 0x64, 0x21, 0x0a
 };
-unsigned int stub_bin_len = 59;
-
+unsigned int stub_bin_len = 64;
 
 int segment_padding(t_woody_ctx *ctx)
 {
 	Elf64_Ehdr *ehdr;
 	Elf64_Phdr *phdr;
-
-	if (!IN_BOUNDS(ctx->filesize, 0, sizeof(Elf64_Ehdr))) {
-		fprintf(stderr, "%s: Error: %s: file too small\n",
-		        ctx->progname, ctx->filename);
-		return (1);
-	}
-	ehdr = (Elf64_Ehdr *)ctx->map;
-	if (ehdr->e_phoff && !IN_BOUNDS(ctx->filesize, ehdr->e_phoff, ehdr->e_phnum * sizeof(Elf64_Phdr))) { //! * ehdr->e_phoff can be 0 and is too ehdr->e_phnum
-		fprintf(stderr, "%s: Error: %s: file too small\n",
-		        ctx->progname, ctx->filename);
-		return (1);
-	}
-	phdr = (Elf64_Phdr *)(ctx->map + ehdr->e_phoff);
 	int i;
+
+	if (!IN_BOUNDS(ctx->filesize, sizeof(Elf64_Ehdr), 0)) {
+		fprintf(stderr, "%s: Error: %s: file too small\n",
+		        ctx->progname, ctx->filename);
+		return (1);
+	}
+
+	ehdr = (Elf64_Ehdr *)ctx->map;
+
+	if (!(ehdr->e_phoff && ehdr->e_phnum && IN_BOUNDS(ctx->filesize, ehdr->e_phnum * sizeof(Elf64_Phdr), ehdr->e_phoff))) { //! * ehdr->e_phoff can be 0 and is too ehdr->e_phnum
+		fprintf(stderr, "%s: Error: %s: file too small\n",
+		        ctx->progname, ctx->filename);
+		return (1);
+	}
+
+	phdr = (Elf64_Phdr *)(ctx->map + ehdr->e_phoff);
+
 	for (i = 0; i < ehdr->e_phnum; i++) {
 		if (phdr[i].p_type == PT_LOAD && phdr[i].p_flags & PF_X) {
 			break ;
 		}
 	}
+
 	if (i + 1 >= ehdr->e_phnum)
 		return (1);
 
-	printf("i = %d\n", i);
-
-	uint64_t cave_size = phdr[i + 1].p_offset - (phdr[i].p_offset + phdr[i].p_filesz);
+	// uint64_t cave_size = phdr[i + 1].p_offset - (phdr[i].p_offset + phdr[i].p_filesz);
 	uint64_t cave_offset = phdr[i].p_offset + phdr[i].p_filesz;
 	uint64_t cave_vaddr = cave_offset - phdr[i].p_offset + phdr[i].p_vaddr;
-
-	printf("0 - e_entry = %lu\n", ehdr->e_entry);
-	printf("1 - p_offset = %lu\n", phdr[i].p_offset);
-	printf("2 - p_vaddr = %lu\n", phdr[i].p_vaddr);
-	printf("3 - cave_size = %lu\n", cave_size);
-	printf("4 - cave_offset = %lu\n", cave_offset);
-	printf("5 - cave_vaddr = %lu\n", cave_vaddr);
 
 	unsigned char payload[stub_bin_len];
 	memcpy(payload, stub_bin, stub_bin_len);
@@ -63,12 +55,10 @@ int segment_padding(t_woody_ctx *ctx)
 	size_t      j;
 	oep_marker = 0x4242424242424242;
 	j = 0;
-	printf("fakk1\n");
 	while (j + 8 <= stub_bin_len) {
 		printf("j=%zu val=%lx\n", j, *(uint64_t *)(payload + j));
 		if (*(uint64_t *)(payload + j) == oep_marker) {
-			*(uint64_t *)(payload + j) =  ehdr->e_entry;
-			printf("found at j=%zu\n", j);
+			*(uint64_t *)(payload + j) = ehdr->e_entry - cave_vaddr;
 			break;
 		}
 		j++;

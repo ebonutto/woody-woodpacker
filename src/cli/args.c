@@ -2,7 +2,6 @@
 
 #include <stdio.h> // stderr, fprintf()
 
-
 static int parse_flag(t_woody_ctx *ctx, int argc, char **argv)
 {
 	(void)ctx;
@@ -13,10 +12,10 @@ static int parse_flag(t_woody_ctx *ctx, int argc, char **argv)
 
 int parse_args(t_woody_ctx *ctx, int argc, char **argv)
 {
-	int i;
+	int i = 1;
 
 	ctx->progname = argv[0];
-	i = 1;
+
 	while (i < argc) {
 		if (argv[i][0] == '-')
 			parse_flag(ctx, argc, argv);
@@ -24,9 +23,11 @@ int parse_args(t_woody_ctx *ctx, int argc, char **argv)
 			ctx->filename = argv[i];
 		i++;
 	}
+
 	if (!ctx->filename) {
 		fprintf(stderr, "%s: Error: missing filename\n", ctx->progname);
 		return (1);
 	}
+
 	return (0);
 }
