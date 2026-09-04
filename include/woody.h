@@ -8,6 +8,8 @@
 typedef struct s_woody_ctx {
 	char *progname;
 	char *filename;
+	char *compression;
+	char *cipher;
 	off_t filesize;
 	void *map;
 	size_t oep;
@@ -17,8 +19,10 @@ typedef struct s_woody_ctx {
 int parse_args(t_woody_ctx *ctx, int argc, char **argv);
 int dispatch_format(t_woody_ctx *ctx);
 
-int woody(t_woody_ctx *ctx);
 int map_file(t_woody_ctx *ctx);
+void unmap_file(t_woody_ctx *ctx);
+
+int woody(t_woody_ctx *ctx);
 int pack_elf(t_woody_ctx *ctx);
 int segment_padding(t_woody_ctx *ctx);
 

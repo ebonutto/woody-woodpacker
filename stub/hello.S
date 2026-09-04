@@ -19,4 +19,5 @@ _start:
     jmp     rax
 
 oep:     dq 0x4242424242424242
+cipher:  dq 0x4343434343434343
 message: db "Hello, World!", 10

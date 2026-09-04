@@ -44,3 +44,8 @@ int map_file(t_woody_ctx *ctx)
 	close(fd);
 	return (0);
 }
+
+void unmap_file(t_woody_ctx *ctx)
+{
+	munmap(ctx->map, ctx->filesize);
+}

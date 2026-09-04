@@ -11,6 +11,6 @@ int woody(t_woody_ctx *ctx)
 
 	ret = dispatch_format(ctx);
 
-	munmap(ctx->map, ctx->filesize); //TODO unmap_file()
+	unmap_file(ctx);
 	return (ret);
 }
