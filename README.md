@@ -26,3 +26,13 @@ xxd -i stub.bin > stub.h
 
 
 `hello`
+
+
+nasm -f bin stub/hello.S -o stub.bin &&
+python3 -c "
+data = open('stub.bin', 'rb').read()
+print('unsigned char stub_bin[] = {')
+print(', '.join(f'0x{b:02x}' for b in data))
+print('};')
+print(f'unsigned int stub_bin_len = {len(data)};')
+"
