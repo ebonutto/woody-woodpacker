@@ -6,6 +6,8 @@
 #include <string.h> // memcpy()
 
 #define OEP_MARKER 0x4141414141414141ULL
+#define ENC_MARKER 0x4242424242424242ULL
+#define SIZE_MARKER 0x4343434343434343ULL
 
 #define IN_BOUNDS(filesize, size, offset) \
 	((uint64_t)(offset) <= (uint64_t)(filesize) && \
@@ -121,7 +123,12 @@ static int patch_stub(t_woody_ctx *ctx, Elf64_Ehdr *ehdr, uint64_t cave_vaddr,
 	memcpy(payload, stub_bin, stub_bin_len);
 
 	oep = ehdr->e_entry - cave_vaddr;
-	if (patch_marker(payload, stub_bin_len, OEP_MARKER, oep) != 0) {
+	if (patch_marker(payload, stub_bin_len, OEP_MARKER, oep)) {
+		fprintf(stderr, "%s: Error: %s: invalid stub\n",
+			ctx->progname, ctx->filename);
+		return (1);
+	}
+	if (patch_marker(payload, stub_bin_len, OEP_MARKER, oep)) {
 		fprintf(stderr, "%s: Error: %s: invalid stub\n",
 			ctx->progname, ctx->filename);
 		return (1);

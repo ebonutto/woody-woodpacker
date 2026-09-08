@@ -21,22 +21,22 @@ _start:
     mov     r10, [rel key_size]
     xor     r9, r9
 
-; decryption_loop:
-    ; test    rcx, rcx
-    ; jz      decryption_done
-    ; mov     r11b, [rsi + r9]
-    ; xor     byte [rax], r11b
-    ; inc     rax
-    ; inc     r9
-    ; cmp     r9, r10
-    ; jl      no_wrap
-    ; xor     r9, r9
+decryption_loop:
+    test    rcx, rcx
+    jz      decryption_done
+    mov     r11b, [rsi + r9]
+    xor     byte [rax], r11b
+    inc     rax
+    inc     r9
+    cmp     r9, r10
+    jl      no_wrap
+    xor     r9, r9
 
-; no_wrap:
-    ; dec     rcx
-    ; jmp     decryption_loop
+no_wrap:
+    dec     rcx
+    jmp     decryption_loop
 
-; decryption_done:
+decryption_done:
     mov     rax, [rel oep]
     add     rax, rbx
     jmp     rax
