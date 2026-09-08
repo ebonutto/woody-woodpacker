@@ -128,11 +128,6 @@ static int patch_stub(t_woody_ctx *ctx, Elf64_Ehdr *ehdr, uint64_t cave_vaddr,
 			ctx->progname, ctx->filename);
 		return (1);
 	}
-	if (patch_marker(payload, stub_bin_len, OEP_MARKER, oep)) {
-		fprintf(stderr, "%s: Error: %s: invalid stub\n",
-			ctx->progname, ctx->filename);
-		return (1);
-	}
 	return (0);
 }
 
