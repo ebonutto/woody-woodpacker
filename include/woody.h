@@ -4,13 +4,17 @@
 /* Includes */
 #include <sys/types.h> // off_t
 
+#include <stddef.h> // size_t
+
+/* Defines */
+#define MAX_KEY_SIZE 256
+
 /* Structures */
 typedef struct s_woody_ctx {
 	char *progname;
 	char *filename;
-	char *compression;
-	char *cipher;
-	// key
+	unsigned char key[MAX_KEY_SIZE];
+	size_t key_size;
 	off_t filesize;
 	void *map;
 	size_t oep;
