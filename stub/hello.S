@@ -41,10 +41,10 @@ decryption_done:
     add     rax, rbx
     jmp     rax
 
-oep: dq 0x4141414141414141
-enc: dq 0x4242424242424242
-size: dq 0x4343434343434343
-key: times 8 db 0
-key_size: dq 8
+oep:        dq 0x4141414141414141
+enc:        dq 0x4242424242424242
+size:       dq 0x4343434343434343
+key:        dq 0x4444444444444444
+key_size:   times 256 db 0x00
 
 message: db "....WOODY....", 10
