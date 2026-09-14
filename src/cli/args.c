@@ -35,13 +35,8 @@ static int parse_compression(t_woody_ctx *ctx, int *i, int argc, char **argv)
 
 	compression = argv[*i];
 
-	if (strcmp(compression, "none") == 0) {
-		ctx->compression = COMPRESSION_NONE;
-		return (0);
-	}
-
 	if (strcmp(compression, "rle") == 0) {
-		ctx->compression = COMPRESSION_RLE;
+		ctx->compression = RLE;
 		return (0);
 	}
 
@@ -61,18 +56,8 @@ static int parse_cipher(t_woody_ctx *ctx, int *i, int argc, char **argv)
 
 	cipher = argv[*i];
 
-	if (strcmp(cipher, "none") == 0) {
-		ctx->cipher = CIPHER_NONE;
-		return (0);
-	}
-
-	if (strcmp(cipher, "xor") == 0) {
-		ctx->cipher = CIPHER_XOR;
-		return (0);
-	}
-
 	if (strcmp(cipher, "rc4") == 0) {
-		ctx->cipher = CIPHER_RC4;
+		ctx->cipher = RC4;
 		return (0);
 	}
 
@@ -98,7 +83,7 @@ static int parse_key(t_woody_ctx *ctx, int *i, int argc, char **argv)
 	key = argv[*i];
 	ctx->key_size = strlen(key);
 	if (ctx->key_size == 0 || ctx->key_size > MAX_KEY_SIZE) {
-		fprintf(stderr, "%s: Error: invalid key size (1-256 bytes)\n",
+		fprintf(stderr, "%s: Error: invalid key size (1-32 bytes)\n",
 		        ctx->progname);
 		return (1);
 	}
