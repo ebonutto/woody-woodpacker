@@ -1,8 +1,17 @@
 #include "woody.h"
 
-#include <sys/mman.h> // MAP_FAILED, MAP_PRIVATE, PROT_READ, PROT_WRITE, munmap(), mmap()
+#include <string.h> // memset()
 
-int woody(t_woody_ctx *ctx)
+void woody_init(t_woody_ctx *ctx)
+{
+	memset(&ctx, 0, sizeof(ctx));
+
+	ctx->pack_method = CODE_CAVE_INJECTION;
+	ctx->cipher = RC4;
+	ctx->compression = RLE;
+}
+
+int woody_pack(t_woody_ctx *ctx)
 {
 	int ret;
 
