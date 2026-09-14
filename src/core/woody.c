@@ -1,10 +1,13 @@
 #include "woody.h"
 
-#include <string.h> // memset()
+#include <string.h> // memcpy(), memset()
 
 void woody_init(t_woody_ctx *ctx)
 {
-	memset(&ctx, 0, sizeof(ctx));
+	memset(ctx, 0, sizeof(*ctx));
+
+	memcpy(ctx->key, "hello", 5);
+	ctx->key_size = 5;
 
 	ctx->pack_method = CODE_CAVE_INJECTION;
 	ctx->cipher = RC4;
@@ -19,6 +22,8 @@ int woody_pack(t_woody_ctx *ctx)
 		return (1);
 
 	ret = dispatch_format(ctx);
+	if (ret == 0)
+		ret = write_woody(ctx);
 
 	unmap_file(ctx);
 	return (ret);
