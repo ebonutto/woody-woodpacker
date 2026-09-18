@@ -57,10 +57,10 @@ static int parse_cipher(t_woody_ctx *ctx, int *i, int argc, char **argv)
 
 	cipher = argv[*i];
 
-	if (strcmp(cipher, "rc4") == 0) {
-		ctx->cipher = RC4;
-		return (0);
-	}
+	// if (strcmp(cipher, "rc4") == 0) {
+	// 	ctx->cipher = RC4;
+	// 	return (0);
+	// }
 
 	if (strcmp(cipher, "xor") == 0) {
 		ctx->cipher = XOR;

@@ -7,7 +7,7 @@ void woody_init(t_woody_ctx *ctx)
 	memset(ctx, 0, sizeof(*ctx));
 
 	ctx->pack_method = CODE_CAVE_INJECTION;
-	ctx->cipher = RC4;
+	ctx->cipher = XOR;
 	ctx->compression = RLE;
 }
 
