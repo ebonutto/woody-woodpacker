@@ -30,7 +30,7 @@ static int check_elf_header(t_woody_ctx *ctx)
 {
 	if ((uint64_t)ctx->filesize < (uint64_t)sizeof(Elf64_Ehdr)) {
 		fprintf(stderr, "%s: Error: %s: file too small\n",
-			ctx->progname, ctx->filename);
+		        ctx->progname, ctx->filename);
 		return (1);
 	}
 	return (0);
@@ -58,9 +58,7 @@ static int check_phdr_table(t_woody_ctx *ctx, Elf64_Ehdr *ehdr)
 
 static int find_exec_segment(Elf64_Ehdr *ehdr, Elf64_Phdr *phdr) // int32_t ??
 {
-	int i;
-
-	for (i = 0; i < ehdr->e_phnum; i++) {
+	for (int i = 0; i < ehdr->e_phnum; i++) {
 		if (phdr[i].p_type == PT_LOAD && (phdr[i].p_flags & PF_X))
 			return (i);
 	}
@@ -110,12 +108,12 @@ static int get_code_cave(t_woody_ctx *ctx, Elf64_Phdr *phdr, int index,
 static int patch_key(unsigned char *payload, size_t payload_len,
 	const unsigned char *key, size_t key_size)
 {
-	size_t i;
 	uint64_t marker;
 
 	if (key_size > MAX_KEY_SIZE)
 		return (1);
-	for (i = 0; i + sizeof(marker) + MAX_KEY_SIZE <= payload_len; i++)
+
+	for (size_t i = 0; i + sizeof(marker) + MAX_KEY_SIZE <= payload_len; i++)
 	{
 		memcpy(&marker, payload + i, sizeof(marker));
 		if (marker == KEY_MARKER) {
@@ -123,6 +121,7 @@ static int patch_key(unsigned char *payload, size_t payload_len,
 			return (0);
 		}
 	}
+
 	return (1);
 }
 
@@ -188,23 +187,13 @@ static void update_elf(Elf64_Ehdr *ehdr, Elf64_Phdr *phdr, int index,
 	phdr[index].p_flags |= PF_W;
 }
 
-static void encrypt_segment(unsigned char *map, uint64_t offset,
-                             uint64_t size, const unsigned char *key,
-                             size_t key_len)
-{
-	uint64_t k;
-
-	for (k = 0; k < size; k++)
-		map[offset + k] ^= key[k % key_len];
-}
-
-int segment_padding(t_woody_ctx *ctx)
+int code_cave_injection(t_woody_ctx *ctx)
 {
 	Elf64_Ehdr *ehdr;
 	Elf64_Phdr *phdr;
 	int index;
 	uint64_t cave_offset, cave_vaddr;
-	uint64_t enc_vaddr, enc_size;
+	uint64_t enc_offset, enc_vaddr, enc_size;
 	unsigned char payload[stub_bin_len];
 
 	if (check_elf_header(ctx))
@@ -227,10 +216,12 @@ int segment_padding(t_woody_ctx *ctx)
 	if (get_code_cave(ctx, phdr, index, &cave_offset, &cave_vaddr))
 		return (1);
 
+	enc_offset = phdr[index].p_offset;
 	enc_vaddr = phdr[index].p_vaddr;
 	enc_size  = phdr[index].p_filesz;
 
-	encrypt_segment(ctx->map, phdr[index].p_offset, enc_size, (const unsigned char *)"A", 1);
+	// compress_segment(ctx, enc_offset, enc_size);
+	encrypt_segment(ctx, enc_offset, enc_size);
 
 	if (patch_stub(ctx, ehdr, cave_vaddr, enc_vaddr, enc_size, payload))
 		return (1);

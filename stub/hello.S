@@ -37,6 +37,9 @@ no_wrap:
     jmp     decryption_loop
 
 decryption_done:
+    
+
+decompression_done:
     mov     rax, [rel oep]
     add     rax, rbx
     jmp     rax
@@ -44,7 +47,7 @@ decryption_done:
 oep:        dq 0x4141414141414141
 enc:        dq 0x4242424242424242
 size:       dq 0x4343434343434343
-key:        times 256 db 0x44
+key:        times 32 db 0x44
 key_size:   dq 0x4545454545454545
 
 message: db "....WOODY....", 10
