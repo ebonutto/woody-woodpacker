@@ -39,6 +39,11 @@ typedef struct s_woody_ctx {
 } t_woody_ctx;
 
 /* Prototypes */
+void woody_init(t_woody_ctx *ctx);
+int woody_init_key(t_woody_ctx *ctx);
+int woody_pack(t_woody_ctx *ctx);
+
+
 void encrypt_segment(t_woody_ctx *ctx, uint64_t offset, uint64_t size);
 void xor(unsigned char *buf, size_t len, const unsigned char *key, size_t key_len);
 
@@ -54,9 +59,6 @@ int code_cave_injection(t_woody_ctx *ctx);
 
 int write_woody(t_woody_ctx *ctx);
 
-void woody_init_key(t_woody_ctx *ctx);
-void woody_init(t_woody_ctx *ctx);
-int woody_pack(t_woody_ctx *ctx);
 int pack_elf64(t_woody_ctx *ctx);
 
 #endif

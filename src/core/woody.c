@@ -1,4 +1,5 @@
 #include "woody.h"
+#include "cipher.h"
 
 #include <string.h> // memcpy(), memset()
 
@@ -11,12 +12,12 @@ void woody_init(t_woody_ctx *ctx)
 	ctx->compression = RLE;
 }
 
-void woody_init_key(t_woody_ctx *ctx)
+int woody_init_key(t_woody_ctx *ctx)
 {
-	if (!ctx->key_size) {
-		memcpy(ctx->key, "hello", 5); // replace by generate_key
-		ctx->key_size = 5;
-	}
+	if (ctx->key_size)
+		return (0);
+
+	return (generate_key(ctx));
 }
 
 int woody_pack(t_woody_ctx *ctx)
