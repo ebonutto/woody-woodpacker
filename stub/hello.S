@@ -14,7 +14,7 @@ _start:
 
     pop     rdx
 
-    mov     rax, [rel enc]
+    mov     rax, [rel segment]
     add     rax, rbx
     mov     rcx, [rel size]
     lea     rsi, [rel key]
@@ -37,6 +37,8 @@ no_wrap:
     jmp     decryption_loop
 
 decryption_done:
+    mov     rax, [rel segment]
+    add     rax, rbx
     
 
 decompression_done:
@@ -44,11 +46,11 @@ decompression_done:
     add     rax, rbx
     jmp     rax
 
-og_size:    dq 0x4646464646464646
 oep:        dq 0x4141414141414141
-enc:        dq 0x4242424242424242
+segment:    dq 0x4242424242424242
 size:       dq 0x4343434343434343
 key:        times 32 db 0x44
 key_size:   dq 0x4545454545454545
+oss:        dq 0x4646464646464646
 
 message: db "....WOODY....", 10
