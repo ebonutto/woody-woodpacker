@@ -10,5 +10,5 @@ void compress_segment(t_woody_ctx *ctx, uint64_t offset, uint64_t size)
 
 void encrypt_segment(t_woody_ctx *ctx, uint64_t offset, uint64_t size)
 {
-	xor(ctx->map + offset, size, (unsigned char *)"A", 1);
+	xor(ctx->map + offset, size, (unsigned char *)ctx->key, ctx->key_size);
 }

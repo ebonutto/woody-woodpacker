@@ -9,5 +9,7 @@ int main(int argc, char **argv)
 	if (parse_args(&ctx, argc, argv) != 0)
 		return (1);
 
+	woody_init_key(&ctx);
+
 	return (woody_pack(&ctx));
 }

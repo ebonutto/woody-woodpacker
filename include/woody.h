@@ -53,6 +53,7 @@ int code_cave_injection(t_woody_ctx *ctx);
 
 int write_woody(t_woody_ctx *ctx);
 
+void woody_init_key(t_woody_ctx *ctx);
 void woody_init(t_woody_ctx *ctx);
 int woody_pack(t_woody_ctx *ctx);
 int pack_elf64(t_woody_ctx *ctx);

@@ -6,12 +6,17 @@ void woody_init(t_woody_ctx *ctx)
 {
 	memset(ctx, 0, sizeof(*ctx));
 
-	memcpy(ctx->key, "hello", 5);
-	ctx->key_size = 5;
-
 	ctx->pack_method = CODE_CAVE_INJECTION;
 	ctx->cipher = RC4;
 	ctx->compression = RLE;
+}
+
+void woody_init_key(t_woody_ctx *ctx)
+{
+	if (!ctx->key_size) {
+		memcpy(ctx->key, "hello", 5); // replace by generate_key
+		ctx->key_size = 5;
+	}
 }
 
 int woody_pack(t_woody_ctx *ctx)

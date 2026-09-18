@@ -44,6 +44,7 @@ decompression_done:
     add     rax, rbx
     jmp     rax
 
+og_size:    dq 0x4646464646464646
 oep:        dq 0x4141414141414141
 enc:        dq 0x4242424242424242
 size:       dq 0x4343434343434343
