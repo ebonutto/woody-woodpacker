@@ -1,7 +1,7 @@
 #include "woody.h"
 
 #include <elf.h> // PT_LOAD, PT_X, Elf64_Ehdr, Elf64_Phdr
-#include <stdint.h> // uint64_t
+#include <stdint.h> // uintX_t
 #include <stdio.h> // stderr, fprintf()
 #include <string.h> // memcpy()
 

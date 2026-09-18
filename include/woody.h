@@ -5,7 +5,7 @@
 #include <sys/types.h> // off_t
 
 #include <stddef.h> // size_t
-#include <stdint.h> // uint64_t
+#include <stdint.h> // uintX_t
 
 /* Defines */
 #define MAX_KEY_SIZE 32
@@ -16,7 +16,8 @@ typedef enum e_pack_method {
 } t_pack_method;
 
 typedef enum e_cipher {
-	RC4
+	RC4,
+	XOR
 } t_cipher;
 
 typedef enum e_compression {

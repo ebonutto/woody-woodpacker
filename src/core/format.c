@@ -13,14 +13,13 @@ int dispatch_format(t_woody_ctx *ctx)
 		{{0x7F, 'E', 'L', 'F' }, 4, "ELF", pack_elf},
 		{{0x00, 0x00, 0x00, 0x00 }, 0, NULL, NULL}
 	};
-	const t_format *fmt;
 
 	if (ctx->filesize < (off_t)MAX_MAGIC) {
 		fprintf(stderr, "%s: Error: %s: file too small\n",
 		        ctx->progname, ctx->filename);
 	}
 
-	for (fmt = formats; fmt->magic_len; fmt++) {
+	for (const t_format *fmt = formats; fmt->magic_len; fmt++) {
 		if (memcmp(ctx->map, fmt->magic, fmt->magic_len) == 0)
 			return (fmt->pack(ctx));
 	}

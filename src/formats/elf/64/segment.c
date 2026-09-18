@@ -1,5 +1,6 @@
-#include <stdint.h> // uint64_t
 #include "woody.h"
+
+#include <stdint.h> // uintX_t
 
 void compress_segment(t_woody_ctx *ctx, uint64_t offset, uint64_t size)
 {

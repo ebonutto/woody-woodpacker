@@ -8,7 +8,8 @@ static int parse_pack_method(t_woody_ctx *ctx, int *i, int argc, char **argv)
 	const char *method;
 
 	if (++(*i) >= argc) {
-		fprintf(stderr, "%s: Error: missing pack method\n", ctx->progname);
+		fprintf(stderr, "%s: Error: missing pack method\n",
+		        ctx->progname);
 		return (1);
 	}
 
@@ -58,6 +59,11 @@ static int parse_cipher(t_woody_ctx *ctx, int *i, int argc, char **argv)
 
 	if (strcmp(cipher, "rc4") == 0) {
 		ctx->cipher = RC4;
+		return (0);
+	}
+
+	if (strcmp(cipher, "xor") == 0) {
+		ctx->cipher = XOR;
 		return (0);
 	}
 

@@ -27,8 +27,7 @@ static int write_all(int fd, const void *buf, size_t len)
 
 int write_woody(t_woody_ctx *ctx)
 {
-	int fd;
-	int ret;
+	int fd, ret;
 
 	fd = open("woody", O_WRONLY | O_CREAT | O_TRUNC, 0755);
 	if (fd < 0) {
