@@ -26,6 +26,5 @@ int dispatch_format(t_woody_ctx *ctx)
 
 	fprintf(stderr, "%s: Error: %s: Unknown format\n",
 	        ctx->progname, ctx->filename);
-
 	return (1);
 }
